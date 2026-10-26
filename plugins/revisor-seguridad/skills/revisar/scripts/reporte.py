@@ -112,9 +112,10 @@ def generar(datos):
     md.append("")
     md.append("### Para compartir")
     md.append("")
-    md.append("Este resumen no revela detalles de los problemas; el resto del reporte sí, así que no lo "
-              "publiques hasta arreglarlos.")
-    md.append("")
+    if confirmados:
+        md.append("Este resumen no revela detalles de los problemas; el resto del reporte sí, así que no lo "
+                  "publiques hasta arreglarlos.")
+        md.append("")
     partes = [f"{conteo[s]} {SEVERIDADES[s].lower()}{'s' if conteo[s] != 1 else ''}" for s in PESOS if conteo[s]]
     md.append(f"> Mi proyecto sacó **{nota}/100** en la revisión de seguridad de revisor-seguridad"
               + (f" ({', '.join(partes)})." if partes else ", sin hallazgos de los errores más comunes."))

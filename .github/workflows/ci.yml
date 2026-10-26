@@ -1,0 +1,63 @@
+# Corre las pruebas de las skills en cada push a main y en cada pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Mínimo privilegio: este flujo solo necesita leer el código.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    name: Pruebas (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.10" }
+          - { os: ubuntu-latest, python: "3.13" }
+          - { os: windows-latest, python: "3.13" }
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # El flujo no hace push: no hace falta dejar el token guardado en .git.
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Estructura del marketplace
+        run: python -m unittest discover -s pruebas -v
+
+      - name: Revisor de seguridad
+        run: python -m unittest discover -s pruebas/revisor-seguridad -v
+
+  red:
+    # Consulta real a npm audit con el ejemplo vulnerable (lodash 4.17.15).
+    # Va aparte porque depende de internet y del registro de npm.
+    name: npm audit real
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Dependencias vulnerables con npm audit
+        env:
+          REVISOR_PRUEBAS_RED: "1"
+        run: python -m unittest discover -s pruebas/revisor-seguridad -p test_ejemplos.py -k npm_audit_real -v

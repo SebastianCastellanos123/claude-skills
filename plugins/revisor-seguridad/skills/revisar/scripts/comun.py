@@ -1,6 +1,6 @@
 """Utilidades compartidas: recorrer archivos, enmascarar secretos, normalizar rutas.
 
-Solo usa la librería estándar de Python (3.9+), para que el revisor funcione
+Solo usa la librería estándar de Python (3.10+), para que el revisor funcione
 sin instalar nada y sin enviar el código a ningún lado.
 """
 
