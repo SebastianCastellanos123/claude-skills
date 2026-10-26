@@ -1,0 +1,17 @@
+{
+  "name": "castellanos-skills",
+  "description": "Skills de Claude en español: revisión de seguridad para proyectos hechos con IA y más.",
+  "owner": {
+    "name": "Jose Sebastian Castellanos",
+    "url": "https://github.com/SebastianCastellanos123"
+  },
+  "plugins": [
+    {
+      "name": "revisor-seguridad",
+      "source": "./plugins/revisor-seguridad",
+      "description": "Revisa la seguridad de un proyecto hecho con IA (vibe coding) y entrega un reporte en español con una nota de 0 a 100.",
+      "category": "security",
+      "tags": ["seguridad", "security", "vibe-coding", "supabase", "firebase", "español"]
+    }
+  ]
+}

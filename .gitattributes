@@ -1,0 +1,3 @@
+# Finales de línea LF en el repositorio, también en Windows: los scripts y el
+# SKILL.md se leen igual en cualquier sistema.
+* text=auto eol=lf

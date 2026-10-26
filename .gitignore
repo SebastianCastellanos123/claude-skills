@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+# Reportes que el revisor genere al probarlo localmente
+reporte-seguridad*.md

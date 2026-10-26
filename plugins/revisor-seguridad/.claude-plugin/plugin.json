@@ -1,0 +1,12 @@
+{
+  "name": "revisor-seguridad",
+  "version": "0.1.0",
+  "description": "Revisa la seguridad de un proyecto hecho con IA (vibe coding) y entrega un reporte en español con una nota de 0 a 100.",
+  "author": {
+    "name": "Jose Sebastian Castellanos",
+    "url": "https://github.com/SebastianCastellanos123"
+  },
+  "repository": "https://github.com/SebastianCastellanos123/claude-skills",
+  "license": "MIT",
+  "keywords": ["seguridad", "security", "vibe-coding", "supabase", "firebase", "owasp"]
+}
