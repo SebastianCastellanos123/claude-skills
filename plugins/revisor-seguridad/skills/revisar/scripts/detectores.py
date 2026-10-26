@@ -324,7 +324,8 @@ def detectar_cors(ruta, texto):
         if _RE_ORIGEN_ABIERTO_JS.search(llamada) and _RE_CREDENCIALES_JS.search(llamada):
             agregar(m.start(), "CORS acepta cualquier origen y además permite enviar cookies/credenciales")
     for m in _RE_FASTAPI_CORS.finditer(texto):
-        llamada = _ventana(texto, texto.find("(", m.end()) if "(" in texto[m.end():m.end() + 40] else m.end())
+        # La llamada que contiene la configuración es app.add_middleware(CORSMiddleware, ...).
+        llamada = _ventana(texto, max(0, texto.rfind("(", 0, m.start())))
         if re.search(r"""allow_origins\s*=\s*\[\s*["']\*["']\s*\]""", llamada) and re.search(r"allow_credentials\s*=\s*True", llamada):
             agregar(m.start(), "CORSMiddleware con allow_origins=['*'] y allow_credentials=True")
     for m in _RE_FLASK_CORS.finditer(texto):
