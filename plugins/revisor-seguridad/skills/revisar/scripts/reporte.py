@@ -95,7 +95,9 @@ def generar(datos):
     validar(datos)
     hallazgos = datos.get("hallazgos", [])
     nota = calcular_nota(hallazgos)
-    confirmados = [h for h in hallazgos if h["estado"] == "confirmado"]
+    orden = list(PESOS)
+    confirmados = sorted((h for h in hallazgos if h["estado"] == "confirmado"),
+                         key=lambda h: orden.index(h["severidad"]))
     pendientes = [h for h in hallazgos if h["estado"] == "revisar"]
     descartados = [h for h in hallazgos if h["estado"] == "descartado"]
     conteo = {s: sum(h["severidad"] == s for h in confirmados) for s in PESOS}
@@ -123,6 +125,7 @@ def generar(datos):
     if not confirmados:
         md.append("No se encontraron problemas de los tipos que revisa esta herramienta.")
         md.append("")
+    primero_de_tipo = {}
     for i, h in enumerate(confirmados, 1):
         md.append(f"### {i}. [{SEVERIDADES[h['severidad']]}] {_texto(h, 'titulo')}")
         md.append("")
@@ -134,14 +137,24 @@ def generar(datos):
             que += f". {h['nota']}" if not que.endswith(".") else f" {h['nota']}"
         md.append(f"**Qué está mal:** {que}")
         md.append("")
-        md.append(f"**Por qué es peligroso:** {_texto(h, 'por_que')}")
-        md.append("")
-        md.append("**Cómo arreglarlo:**")
-        md.append("")
-        md.append(_texto(h, "como"))
+        if h.get("motivo_severidad"):
+            md.append(f"*Severidad ajustada de {SEVERIDADES[h['severidad_original']].lower()} a "
+                      f"{SEVERIDADES[h['severidad']].lower()}: {h['motivo_severidad']}*")
+            md.append("")
+        # La explicación general se muestra una vez por tipo; las repeticiones solo
+        # remiten a ella y dejan el arreglo concreto de cada caso.
+        if h["tipo"] in primero_de_tipo and h["tipo"] in CATALOGO:
+            md.append(f"**Por qué es peligroso y cómo arreglarlo:** igual que en el hallazgo {primero_de_tipo[h['tipo']]}.")
+        else:
+            primero_de_tipo.setdefault(h["tipo"], i)
+            md.append(f"**Por qué es peligroso:** {_texto(h, 'por_que')}")
+            md.append("")
+            md.append("**Cómo arreglarlo:**")
+            md.append("")
+            md.append(_texto(h, "como"))
         if h.get("arreglo"):
             md.append("")
-            md.append(f"En tu caso: {h['arreglo']}")
+            md.append(f"**En tu caso:** {h['arreglo']}")
         if h.get("enlaces"):
             md.append("")
             md.append("Más información: " + ", ".join(h["enlaces"]))
@@ -222,6 +235,8 @@ def main(argv=None):
     print(f"Nota: {nota}/100 ({nivel(nota)})")
     if pendientes:
         print(f"Atención: quedan sin confirmar {', '.join(pendientes)}; revísalos antes de entregar el reporte.")
+    if datos.get("verificaciones", {}).get("rutas", {}).get("estado") == "pendiente_claude":
+        print("Atención: las rutas no se han revisado (decidir.py rutas-revisadas cuando termines).")
     return 0
 
 
